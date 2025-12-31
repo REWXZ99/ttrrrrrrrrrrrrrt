@@ -1,0 +1,7 @@
+{
+  "name": "Source Code Hub",
+  "description": "A premium cyberpunk-minimalist platform for sharing source code and projects. Featuring real-time interactions, ultra-modern UI, and admin management.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
