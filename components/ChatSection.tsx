@@ -9,7 +9,7 @@ const ChatSection: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [userId] = useState(() => `USER${Math.floor(Math.random() * 9999)}`);
   const [admins] = useState<Admin[]>(storageService.getAdmins());
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMessages(storageService.getChats());
@@ -19,8 +19,11 @@ const ChatSection: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Internal scroll management to prevent global page jumping
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
@@ -82,7 +85,10 @@ const ChatSection: React.FC = () => {
         </div>
 
         <div className="glass-card rounded-[2.5rem] border border-zinc-900 overflow-hidden flex flex-col h-[500px]">
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div 
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth"
+          >
             {messages.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center text-zinc-600">
                 <ShieldCheck size={48} className="mb-4 opacity-20" />
@@ -101,7 +107,6 @@ const ChatSection: React.FC = () => {
                 </div>
               </div>
             ))}
-            <div ref={chatEndRef} />
           </div>
 
           <form onSubmit={handleSendMessage} className="p-4 bg-black/50 border-t border-zinc-900 flex gap-4">
@@ -111,7 +116,7 @@ const ChatSection: React.FC = () => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Ketik pesan..."
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-6 py-3 text-sm focus:outline-none focus:border-red-600 transition-colors"
+              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-6 py-3 text-sm focus:outline-none focus:border-red-600 transition-all"
             />
             <button type="submit" className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white hover:bg-red-700 transition-all">
               <Send size={20} />
